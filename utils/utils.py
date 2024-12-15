@@ -86,7 +86,11 @@ def add_noise(img, noise_factor=0.7, device='cpu'):
 def load_model(device):
     model = AutoencoderV2().to(device)
     try:
-        model.load_state_dict(torch.load('models/autoencoder_0.pth'))
+        # model.load_state_dict(torch.load('models/autoencoder_0.pth'))
+        # Load state dict with proper device mapping
+        state_dict = torch.load('models/autoencoder_0.pth', 
+                              map_location=device)
+        model.load_state_dict(state_dict)
     except FileNotFoundError:
         st.error('Model not found. Please train the model first.')
     model.eval()
