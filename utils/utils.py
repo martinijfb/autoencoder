@@ -3,38 +3,10 @@ from torchvision import transforms
 from torch import nn
 import streamlit as st
 
+    
 class Autoencoder(nn.Module):
     def __init__(self):
         super(Autoencoder, self).__init__()
-
-        # Encoder
-        self.encoder = nn.Sequential(
-            nn.Conv2d(1, 32, 3, stride=1, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(32, 64, 3, stride=1, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(64, 128, 3, stride=1, padding=1),
-            nn.ReLU()
-        )
-
-        # Decoder
-        self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(128, 64, 3, stride=1, padding=1),
-            nn.ReLU(),
-            nn.ConvTranspose2d(64, 32, 3, stride=1, padding=1),
-            nn.ReLU(),
-            nn.ConvTranspose2d(32, 1, 3, stride=1, padding=1),
-            nn.Sigmoid()
-        )
-
-    def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
-        return x
-    
-class AutoencoderV2(nn.Module):
-    def __init__(self):
-        super(AutoencoderV2, self).__init__()
 
         # Encoder
         self.encoder = nn.Sequential(
@@ -84,12 +56,12 @@ def add_noise(img, noise_factor=0.7, device='cpu'):
 
 @st.cache_resource
 def load_model(device):
-    model = AutoencoderV2().to(device)
+    model = Autoencoder().to(device)
     try:
         # model.load_state_dict(torch.load('models/autoencoder_0.pth'))
         # Load state dict with proper device mapping
         state_dict = torch.load('models/autoencoder_0.pth', 
-                              map_location=device)
+                              map_location=device, weights_only=True)
         model.load_state_dict(state_dict)
     except FileNotFoundError:
         st.error('Model not found. Please train the model first.')
